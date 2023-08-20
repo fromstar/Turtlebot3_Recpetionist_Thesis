@@ -10,16 +10,19 @@ import speech_recognition as sr
 from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
 
+# pip install python-telegram-bot==13.13
+
 CHAT_ID = ""
-TOKEN = ""    
+TOKEN = ""
 CONFIGURATION = "src/turtlebot3/turtlebot3_navigation_povo/turtlebot3_navigation_povo/configuration.yaml"
 
 def navigation(msg,update):
     rclpy.init()
+    msg = msg.lower()
     go_to_node = rclpy.create_node("go_to_node")
     action_client = ActionClient(go_to_node,NavigateToPose, 'navigate_to_pose')
 
-    found == False
+    found = False
     with open(CONFIGURATION) as f:
         data = yaml.load(f,Loader=SafeLoader)
     rooms_keys = list(data['rooms'].keys()) 
@@ -51,11 +54,24 @@ def navigation(msg,update):
         
     go_to_node.destroy_node()
     rclpy.shutdown()
-    
-def start_command(update, context):
-    name = update.message.chat.first_name
-    update.message.reply_text("Hello " + name)
-    update.message.reply_text("Please insert room number: ")
+
+def limit_access(update, context, command = False):
+    id = update.message.from_user['id']
+    with open(CONFIGURATION) as f:
+        data = yaml.load(f,Loader=SafeLoader)
+    allowed_ids = data["users"]
+    if id in allowed_ids:
+        if command:
+            return True
+        elif update.message.text == None:
+            print(update.message.from_user['username'] + " send a vocal command")
+            audio_handler(update, context)
+        else:
+            print(update.message.from_user['username'] + " send a text command")
+            text_handler(update, context)
+    else:
+        update.message.reply_text("Sorry, your ID is not allowed to use this service.")
+        return False
 
 def convert_audio():
     orig_audio = "msg.ogg"
@@ -73,7 +89,6 @@ def audio_handler(update, context):
         audio = rec.record(source)
     try:
         res = rec.recognize_google(audio)
-        print(res)
         if res == -1:
             print("Speech was unintelligible")
             update.message.reply_text("Speech was unintelligible")
@@ -81,8 +96,8 @@ def audio_handler(update, context):
             update.message.reply_text("API was unavailable")
             print("API was unavailable")
         else:
-            print(update.message.chat.first_name + " said: " + res)
-            update.message.reply_text(update.message.chat.first_name + "said: " + res)
+            print("I heard from " + update.message.from_user['username'] + ": " + res)
+            update.message.reply_text("I heard: " + res)
             navigation(res,update)
         os.remove("msg.ogg")
         os.remove("msg.wav")
@@ -95,16 +110,35 @@ def audio_handler(update, context):
 
 def text_handler(update,context):
     text = update.message.text
-    print(update.message.chat.first_name+ " wrote: " + text)
+    print(update.message.from_user['username'] + " wrote: " + text)
     update.message.reply_text("You wrote: " + text)
     navigation(text,update)
+
+def start_command(update, context):
+    if limit_access(update,context,True):
+        name = update.message.chat.first_name
+        update.message.reply_text("Hello " + name)
+        msg = "Use /list: see the list of available offices\n\n"
+        msg += "Please send a text or vocal message with the office where I have to go"
+        update.message.reply_text(msg)
+
+def list_command(update, context):
+    if limit_access(update,context,True):
+        with open(CONFIGURATION) as f:
+            data = yaml.load(f,Loader=SafeLoader)
+        rooms_keys = list(data['rooms'].keys()) 
+        lst = "Available rooms: \n"
+        lst += '\n'.join(map(str, rooms_keys))
+        # update.message.reply_text(lst)
+        print(lst)
 
 def main():
     updater = Updater(TOKEN)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start_command))
-    dp.add_handler(MessageHandler(Filters.voice,audio_handler))
-    dp.add_handler(MessageHandler(Filters.text,text_handler))
+    dp.add_handler(CommandHandler("list", list_command))
+    dp.add_handler(MessageHandler(Filters.voice,limit_access))
+    dp.add_handler(MessageHandler(Filters.text,limit_access))
     
     updater.start_polling()
     updater.idle()
