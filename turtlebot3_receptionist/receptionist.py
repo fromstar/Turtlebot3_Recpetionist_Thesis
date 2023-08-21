@@ -10,8 +10,8 @@ import speech_recognition as sr
 from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
 
-CHAT_ID = "225206858"
-TOKEN = "6593779673:AAEhgaWl0lbV5oEYm7H3IduHtv5z2Ta7C_k"
+CHAT_ID = ""
+TOKEN = ""
 CONFIGURATION = "src/turtlebot3/turtlebot3_receptionist/turtlebot3_receptionist/configuration.yaml"
 
 def navigation(msg,update):
