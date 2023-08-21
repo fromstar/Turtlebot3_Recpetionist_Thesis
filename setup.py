@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'turtlebot3_navigation_povo'
+package_name = 'turtlebot3_receptionist'
 
 setup(
     name=package_name,
@@ -13,15 +13,15 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='Davide Dalla Stella',
-    maintainer_email='dallastella.davide@gmail.com',
+    maintainer='davide',
+    maintainer_email='davide@todo.todo',
     description='TODO: Package description',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'set_initial_pose = turtlebot3_navigation_povo.set_initial_pose:main',
-            'go_to = turtlebot3_navigation_povo.go_to:main',
+            'set_initial_pose = turtlebot3_receptionist.set_initial_pose:main',
+            'receptionist = turtlebot3_receptionist.receptionist:main',
         ],
     },
 )
