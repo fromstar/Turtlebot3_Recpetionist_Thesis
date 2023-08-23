@@ -1,0 +1,35 @@
+users: [225206858]
+
+starting_pose: "box"
+
+rooms:
+  desk:
+    x: 0.7
+    y: -1.25
+    z: 0.0
+    th: 1.0
+  door:
+    x: 1.1
+    y: 2.
+    z: 0.0
+    th: -1.0
+  box:
+    x: 0
+    y: 0
+    z: 0
+    th: 0
+  bathroom:
+    x: 0.3
+    y: 0.15
+    z: 0.0
+    th: 0
+  living:
+    x: 3.4
+    y: -2.55
+    z: 0.0
+    th: 1
+  kitchen:
+    x: 4.3
+    y: 4.
+    z: 0.0
+    th: 1
