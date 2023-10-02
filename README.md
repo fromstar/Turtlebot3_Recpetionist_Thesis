@@ -81,9 +81,11 @@ To help you find the correct positions and populate the dictionary, run the navi
 * Run the navigation node loading the captured map ([How to Navigate](https://emanual.robotis.com/docs/en/platform/turtlebot3/navigation/#navigation)).
 * In a new terminal initialize the starting position by executing the set_initial_pose node:
 ```
+cd ~/turtlebot3_ws/
 ros2 run turtlebot3_receptionist set_initial_pose
 ```
 * Run the receptionist node:
 ```
+cd ~/turtlebot3_ws/
 ros2 run turtlebot3_receptionist receptionist
 ```
